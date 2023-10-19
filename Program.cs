@@ -12,6 +12,8 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 // Configurando a injeção de dependência para as interfaces e implementações
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IVoluntarioService, VoluntarioService>();
+builder.Services.AddScoped<IOngService, OngService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

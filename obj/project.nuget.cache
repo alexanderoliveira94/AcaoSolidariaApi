@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "R0mwvg4rctiE1hMYyQUQy77f/IUUTbfa6NUDbHjJG4sjhj3GEZ7/K+W49SEsC8i6vVyRq3fjb/Yro/FwMvPdmg==",
+  "dgSpecHash": "I2qiel7T6asm/n7Ndw+B2zoLF8rIWCtXo93SSGlm9BHUt8akrQ5q/qKL7WxwnOWvFuFUGznBc+fNtTU+dTLYKg==",
   "success": true,
-  "projectFilePath": "A:\\AcaoSolidariaApi\\AcaoSolidariaApi\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
+  "projectFilePath": "A:\\3DS\\PTCC\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\etechas\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\etechas\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",

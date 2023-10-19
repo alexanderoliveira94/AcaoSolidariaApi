@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "A:\\AcaoSolidariaApi\\AcaoSolidariaApi\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj": {}
+    "A:\\3DS\\PTCC\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj": {}
   },
   "projects": {
-    "A:\\AcaoSolidariaApi\\AcaoSolidariaApi\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj": {
+    "A:\\3DS\\PTCC\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "A:\\AcaoSolidariaApi\\AcaoSolidariaApi\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
+        "projectUniqueName": "A:\\3DS\\PTCC\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
         "projectName": "AcaoSolidariaApi",
-        "projectPath": "A:\\AcaoSolidariaApi\\AcaoSolidariaApi\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
+        "projectPath": "A:\\3DS\\PTCC\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
         "packagesPath": "C:\\Users\\etechas\\.nuget\\packages\\",
-        "outputPath": "A:\\AcaoSolidariaApi\\AcaoSolidariaApi\\AcaoSolidariaApi\\obj\\",
+        "outputPath": "A:\\3DS\\PTCC\\AcaoSolidariaApi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

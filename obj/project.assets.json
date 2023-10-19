@@ -3312,11 +3312,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "A:\\AcaoSolidariaApi\\AcaoSolidariaApi\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
+      "projectUniqueName": "a:\\3DS\\PTCC\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
       "projectName": "AcaoSolidariaApi",
-      "projectPath": "A:\\AcaoSolidariaApi\\AcaoSolidariaApi\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
+      "projectPath": "a:\\3DS\\PTCC\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
       "packagesPath": "C:\\Users\\etechas\\.nuget\\packages\\",
-      "outputPath": "A:\\AcaoSolidariaApi\\AcaoSolidariaApi\\AcaoSolidariaApi\\obj\\",
+      "outputPath": "a:\\3DS\\PTCC\\AcaoSolidariaApi\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
