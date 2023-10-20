@@ -1,16 +1,13 @@
 using System.Collections.Generic;
 using AcaoSolidariaApi.Data;
 using AcaoSolidariaApi.Models;
+using System.Linq;
 
 namespace AcaoSolidariaApi.Services
 {
     public class OngService : IOngService
     {
         private readonly List<ONG> ongs = new List<ONG>();
-        private readonly List<Voluntario> voluntarios = new List<Voluntario>();
-        private int lastOngId = 0;
-        private int lastVoluntarioId = 0;
-
 
         private readonly DataContext _context;
 
@@ -22,8 +19,8 @@ namespace AcaoSolidariaApi.Services
 
         public void CriarOng(ONG ong)
         {
-            ong.Id = ++lastOngId;
-            ongs.Add(ong);
+
+            _context.ONGs.Add(ong);
             _context.SaveChanges();
         }
 
@@ -31,30 +28,42 @@ namespace AcaoSolidariaApi.Services
 
         public void AtualizarOng(ONG ong)
         {
-            var index = ongs.FindIndex(o => o.Id == ong.Id);
-            if (index != -1)
+            var ongExistente = _context.ONGs.FirstOrDefault(v => v.Id == ong.Id);
+
+            if (ongExistente != null)
             {
-                ongs[index] = ong;
+                ongExistente.Nome = ong.Nome;
+                ongExistente.Endereco = ong.Endereco;
+                ongExistente.CNPJ = ong.CNPJ;
+                ongExistente.Descricao = ong.Descricao;
+                ongExistente.Senha = ong.Senha;
+
+
+                _context.ONGs.Update(ongExistente);
                 _context.SaveChanges();
             }
         }
 
 
 
-        public ONG ObterOngPorId(int id)
+         public ONG ObterOngPorId(int id)
         {
-            return ongs.Find(ong => ong.Id == id);
-
+            var ong = _context.ONGs.FirstOrDefault(v => v.Id == id);
+            if (ong == null)
+            {
+                throw new Exception($"Voluntário com o ID {id} não encontrado.");
+            }
+            return ong;
         }
 
 
 
-        public void DeletarOng(int id)
+         public void DeletarOng(int id)
         {
-            var ong = ongs.Find(o => o.Id == id);
+            var ong = _context.ONGs.FirstOrDefault(v => v.Id == id);
             if (ong != null)
             {
-                ongs.Remove(ong);
+                _context.ONGs.Remove(ong);
             }
         }
 
