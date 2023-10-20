@@ -5,13 +5,15 @@ using System.Threading.Tasks;
 
 namespace AcaoSolidariaApi.Models
 {
-    public class Voluntario
+    public class Usuario
     {
-        public int Id { get; set; }
+        public int IdUsuario { get; set; }
+        public int IdFoto { get; set; }
         public string Nome { get; set; }
         public string Email { get; set; }
         public string Senha { get; set; }
-
-        //public Endereco Endereco { get; set; }
+        public DateTime? DataRegistro { get; set; }
+        public string Habilidades { get; set; }
+        public float? AvaliacaoMedia { get; set; }
     }
 }

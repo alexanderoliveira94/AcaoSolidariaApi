@@ -13,5 +13,7 @@ namespace AcaoSolidariaApi.Models
         public string CNPJ { get; set; }
         public string Descricao { get; set; }
         public string Senha { get; set; }
+
+        //public Endereco Endereco { get; set; }
     }
 }
