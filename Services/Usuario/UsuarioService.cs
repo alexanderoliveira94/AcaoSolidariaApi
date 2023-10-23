@@ -1,63 +1,46 @@
-using System.Collections.Generic;
 using AcaoSolidariaApi.Data;
 using AcaoSolidariaApi.Models;
+using AcaoSolidariaApi.Services;
 
-namespace AcaoSolidariaApi.Services
+public class UsuarioService : IUsuarioService
 {
-    public class UsuarioService : IUsuarioService
+    private readonly DataContext _context;
+
+    public UsuarioService(DataContext context)
     {
-        private readonly List<ONG> ongs = new List<ONG>();
-        private readonly List<Voluntario> voluntarios = new List<Voluntario>();
-        private int lastOngId = 0;
-        private int lastVoluntarioId = 0;
+        _context = context;
+    }
 
+    public void CriarUsuario(Usuario usuario)
+    {
+        _context.Usuarios.Add(usuario);
+        _context.SaveChanges();
+    }
 
-        private readonly DataContext _context;
-
-        public UsuarioService(DataContext context)
+    public void AtualizarUsuario(Usuario usuario)
+    {
+        var usuarioExistente = _context.Usuarios.FirstOrDefault(u => u.IdUsuario == usuario.IdUsuario);
+        if (usuarioExistente != null)
         {
-            _context = context;
+            // Atualize os campos do usuário conforme necessário
+            _context.Usuarios.Update(usuarioExistente);
+            _context.SaveChanges();
         }
+    }
 
+    public Usuario ObterUsuarioPorId(int id)
+    {
+        return _context.Usuarios.FirstOrDefault(u => u.IdUsuario == id);
 
-        public void CriarOng(ONG ong)
+    }
+
+    public void DeletarUsuario(int id)
+    {
+        var usuario = _context.Usuarios.FirstOrDefault(u => u.IdUsuario == id);
+        if (usuario != null)
         {
-            ong.Id = ++lastOngId;
-            ongs.Add(ong);
-             _context.SaveChanges();
+            _context.Usuarios.Remove(usuario);
+            _context.SaveChanges();
         }
-
-       
-
-        public void AtualizarOng(ONG ong)
-        {
-            var index = ongs.FindIndex(o => o.Id == ong.Id);
-            if (index != -1)
-            {
-                ongs[index] = ong;
-                _context.SaveChanges();
-            }
-        }
-
-       
-
-        public ONG ObterOngPorId(int id)
-        {
-            return ongs.Find(ong => ong.Id == id);
-            
-        }
-
-      
-
-        public void DeletarOng(int id)
-        {
-            var ong = ongs.Find(o => o.Id == id);
-            if (ong != null)
-            {
-                ongs.Remove(ong);
-            }
-        }
-
-       
     }
 }
