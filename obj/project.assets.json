@@ -3312,11 +3312,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\AcaoSolidariaAppeApi\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
+      "projectUniqueName": "D:\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
       "projectName": "AcaoSolidariaApi",
-      "projectPath": "D:\\AcaoSolidariaAppeApi\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
+      "projectPath": "D:\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
       "packagesPath": "C:\\Users\\Alex\\.nuget\\packages\\",
-      "outputPath": "D:\\AcaoSolidariaAppeApi\\AcaoSolidariaApi\\obj\\",
+      "outputPath": "D:\\AcaoSolidariaApi\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -3392,7 +3392,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
       }
     }
   }

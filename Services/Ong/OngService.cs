@@ -26,29 +26,17 @@ namespace AcaoSolidariaApi.Services
 
 
 
-        public void AtualizarOng(ONG ong)
+         public void AtualizarOng(ONG ong)
         {
-            var ongExistente = _context.ONGs.FirstOrDefault(v => v.Id == ong.Id);
-
-            if (ongExistente != null)
-            {
-                ongExistente.Nome = ong.Nome;
-                ongExistente.Endereco = ong.Endereco;
-                ongExistente.CNPJ = ong.CNPJ;
-                ongExistente.Descricao = ong.Descricao;
-                ongExistente.Senha = ong.Senha;
-
-
-                _context.ONGs.Update(ongExistente);
-                _context.SaveChanges();
-            }
+            _context.ONGs.Update(ong);
+            _context.SaveChanges();
         }
 
 
 
          public ONG ObterOngPorId(int id)
         {
-            var ong = _context.ONGs.FirstOrDefault(v => v.Id == id);
+            var ong = _context.ONGs.FirstOrDefault(v => v.IdOng == id);
             if (ong == null)
             {
                 throw new Exception($"Voluntário com o ID {id} não encontrado.");
@@ -60,7 +48,7 @@ namespace AcaoSolidariaApi.Services
 
          public void DeletarOng(int id)
         {
-            var ong = _context.ONGs.FirstOrDefault(v => v.Id == id);
+            var ong = _context.ONGs.FirstOrDefault(v => v.IdOng == id);
             if (ong != null)
             {
                 _context.ONGs.Remove(ong);

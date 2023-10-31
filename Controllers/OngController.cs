@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using AcaoSolidariaApi.Models;
 using AcaoSolidariaApi.Services;
 using AcaoSolidariaApi.Data;
+using AcaoSolidariaApi.Utils;
+using System;
+using System.Linq;
 
 namespace AcaoSolidariaApi.Controllers
 {
@@ -9,9 +12,7 @@ namespace AcaoSolidariaApi.Controllers
     [ApiController]
     public class OngController : ControllerBase
     {
-
         private readonly DataContext _context;
-
         private readonly IOngService _ongservice;
 
         public OngController(IOngService ongservice, DataContext context)
@@ -20,105 +21,117 @@ namespace AcaoSolidariaApi.Controllers
             _context = context;
         }
 
-        // Criar ONG
         [HttpPost("criarOng")]
         public ActionResult CriarOng(ONG ong)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest("Dados de entrada inválidos.");
-            }
 
-            
+            if (_context.ONGs.Any(o => o.EmailOng == ong.EmailOng))
+                return BadRequest("O e-mail fornecido já está em uso.");
+
+            Criptografia.CriarPasswordHash(ong, ong.SenhaOng);
+            ong.SenhaOng = string.Empty;
             _ongservice.CriarOng(ong);
-            return Ok("Ong criada com sucesso.");
+            return Ok("ONG criada com sucesso.");
         }
 
-         // Atualizar Ong
         [HttpPut("atualizarOng/{id}")]
         public ActionResult AtualizarOng(int id, ONG ong)
         {
-            if (id <= 0 || id != ong.Id)
-            {
+            if (id <= 0 || id != ong.IdOng)
                 return BadRequest("ID inválido. O ID fornecido não corresponde ao ID da ONG.");
-            }
 
             if (!ModelState.IsValid)
-            {
                 return BadRequest("Dados de entrada inválidos.");
-            }
 
             try
             {
-                // Realize as operações de atualização conforme necessário
-                var ongExistente = _ongservice.ObterOngPorId(id);
-
+                var ongExistente = ObterOngExistente(id);
                 if (ongExistente == null)
-                {
-                    return NotFound($"Ong com o ID {id} não encontrado.");
-                }
+                    return NotFound($"ONG com o ID {id} não encontrada.");
 
-                ongExistente.Nome = ong.Nome; 
-                ongExistente.Endereco = ong.Endereco;
-                ongExistente.CNPJ = ong.CNPJ;
-                ongExistente.Descricao = ong.Descricao;
-                ongExistente.Senha = ong.Senha;
-                
-                
+                AtualizarCamposOngExistente(ongExistente, ong);
+
                 _ongservice.AtualizarOng(ongExistente);
-                return Ok("Ong atualizado com sucesso.");
+                return Ok("ONG atualizada com sucesso.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Ocorreu um erro: {ex.Message}");
-                return StatusCode(500, "Ocorreu um erro interno no servidor. Tente novamente mais tarde.");
+                return StatusCode(500, $"Ocorreu um erro interno no servidor: {ex.Message}. Tente novamente mais tarde.");
             }
         }
 
-       [HttpGet("obterOng/{id}")]
+        private ONG ObterOngExistente(int id)
+        {
+            return _ongservice.ObterOngPorId(id);
+        }
+
+        private void AtualizarCamposOngExistente(ONG ongExistente, ONG ong)
+        {
+            if (!string.IsNullOrEmpty(ong.NomeOng))
+                ongExistente.NomeOng = ong.NomeOng;
+
+            if (!string.IsNullOrEmpty(ong.EnderecoOng))
+                ongExistente.EnderecoOng = ong.EnderecoOng;
+
+            if (!string.IsNullOrEmpty(ong.CNPJOng))
+                ongExistente.CNPJOng = ong.CNPJOng;
+
+            if (!string.IsNullOrEmpty(ong.EmailOng))
+                AtualizarEmailOngExistente(ongExistente, ong.EmailOng);
+
+            if (!string.IsNullOrEmpty(ong.DescricaoOng))
+                ongExistente.DescricaoOng = ong.DescricaoOng;
+
+            if (!string.IsNullOrEmpty(ong.SenhaOng))
+            {
+                Criptografia.CriarPasswordHash(ongExistente, ong.SenhaOng);
+                ongExistente.SenhaOng = string.Empty;
+            }
+        }
+
+        private void AtualizarEmailOngExistente(ONG ongExistente, string novoEmail)
+        {
+            var emailExistente = _context.ONGs.FirstOrDefault(o => o.EmailOng == novoEmail && o.IdOng != ongExistente.IdOng);
+            if (emailExistente == null)
+                ongExistente.EmailOng = novoEmail;
+        }
+
+        [HttpGet("obterOng/{id}")]
         public ActionResult<ONG> ObterOngPorId(int id)
         {
             try
             {
                 if (id <= 0)
-                {
                     return BadRequest("ID inválido. O ID deve ser um número inteiro positivo.");
-                }
 
                 var ong = _ongservice.ObterOngPorId(id);
 
                 if (ong == null)
-                {
-                    return NotFound($"Ong com o ID {id} não encontrado.");
-                }
+                    return NotFound($"ONG com o ID {id} não encontrada.");
 
                 return Ok(ong);
             }
             catch (Exception ex)
             {
-                // Registre a exceção para depuração
                 Console.WriteLine($"Ocorreu um erro: {ex.Message}");
                 Console.WriteLine($"StackTrace: {ex.StackTrace}");
-
-                // Retorne uma resposta de erro mais descritiva
                 return StatusCode(500, $"Ocorreu um erro interno no servidor: {ex.Message}. Tente novamente mais tarde.");
             }
-
         }
 
         [HttpDelete("deletarOng/{id}")]
         public ActionResult DeletarOng(int id)
         {
             if (id <= 0)
-            {
                 return BadRequest("ID inválido.");
-            }
 
             try
             {
                 _ongservice.DeletarOng(id);
-                _context.SaveChanges(); 
-                return Ok("Ong deletado com sucesso.");
+                _context.SaveChanges();
+                return Ok("ONG deletada com sucesso.");
             }
             catch (Exception ex)
             {
@@ -127,6 +140,5 @@ namespace AcaoSolidariaApi.Controllers
                 return StatusCode(500, "Ocorreu um erro interno no servidor. Tente novamente mais tarde.");
             }
         }
-
     }
 }
