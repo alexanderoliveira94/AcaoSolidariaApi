@@ -335,3 +335,7 @@ D:\AcaoSolidariaApi\obj\Debug\net7.0\refint\AcaoSolidariaApi.dll
 D:\AcaoSolidariaApi\obj\Debug\net7.0\AcaoSolidariaApi.pdb
 D:\AcaoSolidariaApi\obj\Debug\net7.0\AcaoSolidariaApi.genruntimeconfig.cache
 D:\AcaoSolidariaApi\obj\Debug\net7.0\ref\AcaoSolidariaApi.dll
+D:\AcaoSolidariaApi\bin\Debug\net7.0\Microsoft.AspNetCore.JsonPatch.dll
+D:\AcaoSolidariaApi\bin\Debug\net7.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+D:\AcaoSolidariaApi\bin\Debug\net7.0\Newtonsoft.Json.dll
+D:\AcaoSolidariaApi\bin\Debug\net7.0\Newtonsoft.Json.Bson.dll

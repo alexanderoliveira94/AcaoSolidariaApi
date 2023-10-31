@@ -5,6 +5,7 @@ using AcaoSolidariaApi.Data;
 using AcaoSolidariaApi.Utils;
 using System;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace AcaoSolidariaApi.Controllers
 {
@@ -93,6 +94,40 @@ namespace AcaoSolidariaApi.Controllers
             var emailExistente = _context.Usuarios.FirstOrDefault(u => u.Email == novoEmail && u.IdUsuario != usuarioExistente.IdUsuario);
             if (emailExistente == null)
                 usuarioExistente.Email = novoEmail;
+        }
+
+
+        [HttpPost("Autenticar")]
+        public async Task<IActionResult> AutenticarUsuario(Usuario credenciais)
+        {
+            try
+            {
+                Usuario usuario = await _context.Usuarios
+                   .FirstOrDefaultAsync(x => x.Email.ToLower().Equals(credenciais.Email.ToLower()));
+
+                if (usuario == null)
+                {
+                    throw new System.Exception("Usuário não encontrado.");
+                }
+                else if (!Criptografia.VerificarPasswordHash(credenciais.SenhaUsuario, usuario.PasswordHash, usuario.PasswordSalt))
+                {
+                    throw new System.Exception("Senha incorreta.");
+                }
+                else
+                {
+                    usuario.DataRegistro = System.DateTime.Now;
+                    _context.Usuarios.Update(usuario);
+                    await _context.SaveChangesAsync(); //Confirma a alteração no banco
+
+
+                    return Ok(usuario);
+
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("obterUsuario/{id}")]
