@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcaoSolidariaApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231106175540_ClassesUsuarioCorrigida")]
+    [Migration("20231031033223_ClassesUsuarioCorrigida")]
     partial class ClassesUsuarioCorrigida
     {
         /// <inheritdoc />
@@ -27,42 +27,33 @@ namespace AcaoSolidariaApi.Migrations
 
             modelBuilder.Entity("AcaoSolidariaApi.Models.ONG", b =>
                 {
-                    b.Property<int?>("IdOng")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("IdOng"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CNPJOng")
+                    b.Property<string>("CNPJ")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DescricaoOng")
+                    b.Property<string>("Descricao")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EmailOng")
+                    b.Property<string>("Endereco")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EnderecoOng")
+                    b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("IdFotoOng")
-                        .HasColumnType("int");
-
-                    b.Property<string>("NomeOng")
+                    b.Property<string>("Senha")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("PasswordHash")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<byte[]>("PasswordSalt")
-                        .HasColumnType("varbinary(max)");
-
-                    b.HasKey("IdOng");
+                    b.HasKey("Id");
 
                     b.ToTable("ONGs", (string)null);
                 });
@@ -89,7 +80,7 @@ namespace AcaoSolidariaApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("IdFotoUsuario")
+                    b.Property<int?>("IdFoto")
                         .HasColumnType("int");
 
                     b.Property<string>("Nome")
@@ -108,6 +99,31 @@ namespace AcaoSolidariaApi.Migrations
                         .IsUnique();
 
                     b.ToTable("Usuarios", (string)null);
+                });
+
+            modelBuilder.Entity("AcaoSolidariaApi.Models.Voluntario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Senha")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Voluntarios", (string)null);
                 });
 #pragma warning restore 612, 618
         }
