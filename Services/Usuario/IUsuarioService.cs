@@ -1,13 +1,13 @@
 using AcaoSolidariaApi.Models;
+using System.Threading.Tasks;
 
 namespace AcaoSolidariaApi.Services
 {
     public interface IUsuarioService
     {
-        void CriarUsuario(Usuario usuario);
+        Task RegistrarUsuario(Usuario usuario);
         void AtualizarUsuario(Usuario usuario);
         Usuario ObterUsuarioPorId(int id);
-        void DeletarUsuario(int id);
-
+        Task DeletarUsuario(int id);
     }
 }

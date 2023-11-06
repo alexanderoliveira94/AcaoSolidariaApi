@@ -1,6 +1,9 @@
 using AcaoSolidariaApi.Data;
 using AcaoSolidariaApi.Models;
 using AcaoSolidariaApi.Services;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
 
 public class UsuarioService : IUsuarioService
 {
@@ -11,36 +14,31 @@ public class UsuarioService : IUsuarioService
         _context = context;
     }
 
-    public void CriarUsuario(Usuario usuario)
+    public async Task RegistrarUsuario(Usuario usuario)
     {
-        _context.Usuarios.Add(usuario);
-        _context.SaveChanges();
+        await _context.Usuarios.AddAsync(usuario);
+        await _context.SaveChangesAsync();
+
     }
 
     public void AtualizarUsuario(Usuario usuario)
     {
-        var usuarioExistente = _context.Usuarios.FirstOrDefault(u => u.IdUsuario == usuario.IdUsuario);
-        if (usuarioExistente != null)
-        {
-            // Atualize os campos do usuário conforme necessário
-            _context.Usuarios.Update(usuarioExistente);
-            _context.SaveChanges();
-        }
+        _context.Usuarios.Update(usuario);
+        _context.SaveChanges();
     }
 
     public Usuario ObterUsuarioPorId(int id)
     {
         return _context.Usuarios.FirstOrDefault(u => u.IdUsuario == id);
-
     }
 
-    public void DeletarUsuario(int id)
+    public async Task DeletarUsuario(int id)
     {
         var usuario = _context.Usuarios.FirstOrDefault(u => u.IdUsuario == id);
         if (usuario != null)
         {
             _context.Usuarios.Remove(usuario);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }
