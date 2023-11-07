@@ -38,13 +38,16 @@ namespace AcaoSolidariaApi.Controllers
                 usuario.SenhaUsuario = string.Empty;
                 usuario.DataRegistro = DateTime.Now;
                 await _usuarioService.RegistrarUsuario(usuario);
-                return Ok("Usuário criado com sucesso.");
+                return NoContent(); // Retorna uma resposta vazia com status 200 OK
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Ocorreu um erro interno no servidor: {ex.Message}. Tente novamente mais tarde.");
+                return StatusCode(500); // Retorna um status 500 Internal Server Error sem mensagem
             }
         }
+
+
+
 
         [HttpPost("Autenticar")]
         public async Task<IActionResult> AutenticarUsuario(Usuario credenciais)
@@ -68,7 +71,7 @@ namespace AcaoSolidariaApi.Controllers
                     _context.Usuarios.Update(usuario);
                     await _context.SaveChangesAsync(); //Confirma a alteração no banco
 
-                    return Ok(usuario);
+                    return NoContent();
                 }
             }
             catch (System.Exception ex)
