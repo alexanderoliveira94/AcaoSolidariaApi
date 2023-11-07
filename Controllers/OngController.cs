@@ -30,7 +30,7 @@ namespace AcaoSolidariaApi.Controllers
             if (_context.ONGs.Any(o => o.EmailOng == ong.EmailOng))
                 return BadRequest("O e-mail fornecido já está em uso.");
 
-            Criptografia.CriarPasswordHash(ong, ong.SenhaOng);
+            Criptografia.CriarPasswordHash(ong.SenhaOng,out byte[] hash, out byte[] salt);
             ong.SenhaOng = string.Empty;
             _ongservice.CriarOng(ong);
             return Ok("ONG criada com sucesso.");
@@ -86,7 +86,7 @@ namespace AcaoSolidariaApi.Controllers
 
             if (!string.IsNullOrEmpty(ong.SenhaOng))
             {
-                Criptografia.CriarPasswordHash(ongExistente, ong.SenhaOng);
+                Criptografia.CriarPasswordHash(ong.SenhaOng,out byte[] hash, out byte[] salt);
                 ongExistente.SenhaOng = string.Empty;
             }
         }

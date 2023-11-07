@@ -547,3 +547,4 @@ D:\AcaoSolidariaApi\AcaoSolidariaApi\bin\Debug\net7.0\runtimes\win\lib\net6.0\Sy
 D:\AcaoSolidariaApi\AcaoSolidariaApi\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 D:\AcaoSolidariaApi\AcaoSolidariaApi\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
 D:\AcaoSolidariaApi\AcaoSolidariaApi\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\AcaoSolidariaApieApp\AcaoSolidariaApi\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

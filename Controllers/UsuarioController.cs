@@ -25,22 +25,34 @@ namespace AcaoSolidariaApi.Controllers
             _context = context;
         }
 
+
+        private async Task<bool> UsuarioExistente(string email)
+        {
+            if (await _context.Usuarios.AnyAsync(x => x.Email.ToLower() == email.ToLower()))
+            {
+                return true;
+            }
+            return false;
+        }
+
         [HttpPost("Registrar")]
         public async Task<ActionResult> RegistrarUsuario(Usuario usuario)
         {
             try
             {
-                if (!ModelState.IsValid)
-                    return BadRequest("Dados de entrada inválidos.");
 
-                if (_context.Usuarios.Any(u => u.Email == usuario.Email))
-                    return BadRequest("O e-mail fornecido já está em uso.");
+                if (await UsuarioExistente(usuario.Email))
+                    throw new System.Exception("Email já cadastrado");
 
-                Criptografia.CriarPasswordHash(usuario, usuario.SenhaUsuario);
+
+
+                Criptografia.CriarPasswordHash(usuario.SenhaUsuario,out byte[] hash, out byte[] salt);
                 usuario.SenhaUsuario = string.Empty;
-                usuario.DataRegistro = DateTime.Now;
+                usuario.PasswordHash = hash;
+                usuario.PasswordSalt = salt;
                 await _usuarioService.RegistrarUsuario(usuario);
-                return NoContent(); // Retorna uma resposta vazia com status 200 OK
+               
+                return NoContent(); 
             }
             catch (Exception ex)
             {
@@ -49,35 +61,36 @@ namespace AcaoSolidariaApi.Controllers
         }
 
         [HttpPost("Autenticar")]
-        public async Task<IActionResult> AutenticarUsuario(Usuario credenciais)
+public async Task<IActionResult> AutenticarUsuario(string email, string senha)
+{
+    try
+    {
+        Usuario? usuario = await _context.Usuarios
+            .FirstOrDefaultAsync(x => x.Email.ToLower().Equals(email.ToLower()));
+
+        if (usuario == null)
         {
-            try
-            {
-                Usuario usuario = await _context.Usuarios
-                   .FirstOrDefaultAsync(x => x.Email.ToLower().Equals(credenciais.Email.ToLower()));
-
-                if (usuario == null)
-                {
-                    throw new System.Exception("Usuário não encontrado.");
-                }
-                else if (!Criptografia.VerificarPasswordHash(credenciais.SenhaUsuario, usuario.PasswordHash, usuario.PasswordSalt))
-                {
-                    throw new System.Exception("Senha incorreta.");
-                }
-                else
-                {
-                    usuario.DataRegistro = System.DateTime.Now;
-                    _context.Usuarios.Update(usuario);
-                    await _context.SaveChangesAsync(); //Confirma a alteração no banco
-
-                    return NoContent();
-                }
-            }
-            catch (System.Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            throw new System.Exception("Usuário não encontrado.");
         }
+        else if (!Criptografia.VerificarPasswordHash(senha, usuario.PasswordHash, usuario.PasswordSalt))
+        {
+            throw new System.Exception("Senha incorreta.");
+        }
+        else
+        {
+            usuario.DataRegistro = System.DateTime.Now;
+            _context.Usuarios.Update(usuario);
+            await _context.SaveChangesAsync(); //Confirma a alteração no banco
+
+            return Ok(usuario);
+        }
+    }
+    catch (System.Exception ex)
+    {
+        return BadRequest(ex.Message);
+    }
+}
+
 
         [HttpPut("atualizarUsuario/{id}")]
         public ActionResult AtualizarUsuario(int id, Usuario usuario)
@@ -170,7 +183,7 @@ namespace AcaoSolidariaApi.Controllers
 
                 if (!string.IsNullOrEmpty(usuario.SenhaUsuario))
                 {
-                    Criptografia.CriarPasswordHash(usuarioExistente, usuario.SenhaUsuario);
+                    Criptografia.CriarPasswordHash(usuario.SenhaUsuario,out byte[] hash, out byte[] salt);
                     usuarioExistente.SenhaUsuario = string.Empty;
                 }
             }
