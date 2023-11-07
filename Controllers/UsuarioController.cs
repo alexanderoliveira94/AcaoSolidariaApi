@@ -3,10 +3,12 @@ using AcaoSolidariaApi.Models;
 using AcaoSolidariaApi.Services;
 using AcaoSolidariaApi.Data;
 using AcaoSolidariaApi.Utils;
-using System;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AcaoSolidariaApi.Controllers
 {
@@ -42,19 +44,16 @@ namespace AcaoSolidariaApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500); // Retorna um status 500 Internal Server Error sem mensagem
+                return StatusCode(500, $"Ocorreu um erro interno no servidor: {ex.Message}. Tente novamente mais tarde.");
             }
         }
-
-
-
 
         [HttpPost("Autenticar")]
         public async Task<IActionResult> AutenticarUsuario(Usuario credenciais)
         {
             try
             {
-                Usuario? usuario = await _context.Usuarios
+                Usuario usuario = await _context.Usuarios
                    .FirstOrDefaultAsync(x => x.Email.ToLower().Equals(credenciais.Email.ToLower()));
 
                 if (usuario == null)

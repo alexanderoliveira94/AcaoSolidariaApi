@@ -1,12 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "Gc/UNXelSqR/5onmv2MliWT1LlKC75ZueWr7/Xy+kxNFN6LNEoY/u5zQ+0oA1oZtlM94Nz1LOPSebQsr32mdAA==",
+  "dgSpecHash": "iQMDaNxF0aYB+6KUDQtJBu9T88r8Ciq6eS4ET7HImIwa4Z8xdfoJ7XBEpQT2wIYJP3IVbXmHHraav1Zkbs/gmg==",
   "success": true,
   "projectFilePath": "D:\\AcaoSolidariaApi\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Alex\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\Alex\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",
     "C:\\Users\\Alex\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
+    "C:\\Users\\Alex\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\7.0.13\\microsoft.aspnetcore.authentication.jwtbearer.7.0.13.nupkg.sha512",
     "C:\\Users\\Alex\\.nuget\\packages\\microsoft.aspnetcore.jsonpatch\\7.0.13\\microsoft.aspnetcore.jsonpatch.7.0.13.nupkg.sha512",
     "C:\\Users\\Alex\\.nuget\\packages\\microsoft.aspnetcore.mvc.newtonsoftjson\\7.0.13\\microsoft.aspnetcore.mvc.newtonsoftjson.7.0.13.nupkg.sha512",
     "C:\\Users\\Alex\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.11\\microsoft.aspnetcore.openapi.7.0.11.nupkg.sha512",

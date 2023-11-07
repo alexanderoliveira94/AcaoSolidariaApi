@@ -36,5 +36,8 @@ namespace AcaoSolidariaApi.Models
         
         [JsonIgnore]
         public byte[]? PasswordSalt { get; set; }
+
+        [NotMapped]
+        public string ?Token { get; set; }
     }
 }

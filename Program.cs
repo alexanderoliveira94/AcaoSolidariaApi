@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using AcaoSolidariaApi.Data;
 using AcaoSolidariaApi.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer; 
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +21,8 @@ builder.Services.AddScoped<IOngService, OngService>();
 builder.Services.AddCors();
 
 builder.Services.AddControllers();
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
