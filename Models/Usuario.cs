@@ -12,15 +12,15 @@ namespace AcaoSolidariaApi.Models
         [JsonIgnore]
         public int IdUsuario { get; set; }
         
-        public string Nome { get; set; }
+        public string Nome { get; set; } = string.Empty;
 
         [EmailAddress]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [JsonIgnore]
         public DateTime? DataRegistro { get; set; }
 
-        public string DescricaoHabilidades { get; set; }
+        public string DescricaoHabilidades { get; set; } = string.Empty;
 
         [JsonIgnore]
         public float? AvaliacaoMedia { get; set; }
@@ -29,7 +29,7 @@ namespace AcaoSolidariaApi.Models
         public int? IdFotoUsuario { get; set; }
 
         [NotMapped] 
-        public string SenhaUsuario { get; set; }
+        public string SenhaUsuario { get; set; } = string.Empty;
 
         [JsonIgnore]
         public byte[]? PasswordHash { get; set; }

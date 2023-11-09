@@ -46,50 +46,51 @@ namespace AcaoSolidariaApi.Controllers
 
 
 
-                Criptografia.CriarPasswordHash(usuario.SenhaUsuario,out byte[] hash, out byte[] salt);
+                Criptografia.CriarPasswordHash(usuario.SenhaUsuario, out byte[] hash, out byte[] salt);
                 usuario.SenhaUsuario = string.Empty;
                 usuario.PasswordHash = hash;
                 usuario.PasswordSalt = salt;
                 await _usuarioService.RegistrarUsuario(usuario);
-               
-                return NoContent(); 
+
+                return Ok(usuario.IdUsuario);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
-                return StatusCode(500, $"Ocorreu um erro interno no servidor: {ex.Message}. Tente novamente mais tarde.");
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpPost("Autenticar")]
-public async Task<IActionResult> AutenticarUsuario(string email, string senha)
-{
-    try
-    {
-        Usuario? usuario = await _context.Usuarios
-            .FirstOrDefaultAsync(x => x.Email.ToLower().Equals(email.ToLower()));
+        public async Task<IActionResult> AutenticarUsuario(Usuario credenciais)
+        {
+            try
+            {
+                Usuario? usuario = await _context.Usuarios
+                    .FirstOrDefaultAsync(x => x.Email.ToLower().Equals(credenciais.Email.ToLower()));
 
-        if (usuario == null)
-        {
-            throw new System.Exception("Usuário não encontrado.");
+                if (usuario == null)
+                {
+                    throw new System.Exception("Usuário não encontrado.");
+                }
+                else if (!Criptografia.VerificarPasswordHash(credenciais.SenhaUsuario, usuario.PasswordHash, usuario.PasswordSalt))
+                {
+                    throw new System.Exception("Senha incorreta.");
+                }
+                else
+                {
+                    usuario.DataRegistro = System.DateTime.Now;
+                    _context.Usuarios.Update(usuario);
+                    await _context.SaveChangesAsync(); //Confirma a alteração no banco
+                    usuario.PasswordHash = null;
+                    usuario.PasswordSalt = null;
+                    return Ok(usuario);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-        else if (!Criptografia.VerificarPasswordHash(senha, usuario.PasswordHash, usuario.PasswordSalt))
-        {
-            throw new System.Exception("Senha incorreta.");
-        }
-        else
-        {
-            usuario.DataRegistro = System.DateTime.Now;
-            _context.Usuarios.Update(usuario);
-            await _context.SaveChangesAsync(); //Confirma a alteração no banco
-
-            return Ok(usuario);
-        }
-    }
-    catch (System.Exception ex)
-    {
-        return BadRequest(ex.Message);
-    }
-}
 
 
         [HttpPut("atualizarUsuario/{id}")]
@@ -183,7 +184,7 @@ public async Task<IActionResult> AutenticarUsuario(string email, string senha)
 
                 if (!string.IsNullOrEmpty(usuario.SenhaUsuario))
                 {
-                    Criptografia.CriarPasswordHash(usuario.SenhaUsuario,out byte[] hash, out byte[] salt);
+                    Criptografia.CriarPasswordHash(usuario.SenhaUsuario, out byte[] hash, out byte[] salt);
                     usuarioExistente.SenhaUsuario = string.Empty;
                 }
             }
