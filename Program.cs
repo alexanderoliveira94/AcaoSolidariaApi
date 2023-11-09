@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Adicione serviços ao contêiner.
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoLocal"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoCasa"));
 });
 
 // Configurando a injeção de dependência para as interfaces e implementações

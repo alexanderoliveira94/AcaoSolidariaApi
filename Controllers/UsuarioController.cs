@@ -47,6 +47,7 @@ namespace AcaoSolidariaApi.Controllers
 
 
                 Criptografia.CriarPasswordHash(usuario.SenhaUsuario, out byte[] hash, out byte[] salt);
+                usuario.DataRegistro = System.DateTime.Now;
                 usuario.SenhaUsuario = string.Empty;
                 usuario.PasswordHash = hash;
                 usuario.PasswordSalt = salt;
