@@ -1,14 +1,12 @@
-using System.Collections.Generic;
-using AcaoSolidariaApi.Data;
+using System.Threading.Tasks;
 using AcaoSolidariaApi.Models;
-using System.Linq;
+using AcaoSolidariaApi.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace AcaoSolidariaApi.Services
 {
     public class OngService : IOngService
     {
-        private readonly List<ONG> ongs = new List<ONG>();
-
         private readonly DataContext _context;
 
         public OngService(DataContext context)
@@ -16,42 +14,31 @@ namespace AcaoSolidariaApi.Services
             _context = context;
         }
 
-
-        public void CriarOng(ONG ong)
+        public async Task RegistrarOng(ONG ong)
         {
-
             _context.ONGs.Add(ong);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AtualizarOng(ONG ong)
+        {
+            _context.ONGs.Add(ong);
+            await _context.SaveChangesAsync();
         }
 
 
-
-         public void AtualizarOng(ONG ong)
+        public ONG ObterOngPorId(int id)
         {
-            _context.ONGs.Update(ong);
-            _context.SaveChanges();
+            return  _context.ONGs.FirstOrDefault(u => u.IdOng == id);
         }
 
-
-
-         public ONG ObterOngPorId(int id)
+        public async Task DeletarOng(int id)
         {
-            var ong = _context.ONGs.FirstOrDefault(v => v.IdOng == id);
-            if (ong == null)
-            {
-                throw new Exception($"Voluntário com o ID {id} não encontrado.");
-            }
-            return ong;
-        }
-
-
-
-         public void DeletarOng(int id)
-        {
-            var ong = _context.ONGs.FirstOrDefault(v => v.IdOng == id);
+            var ong = await _context.ONGs.FindAsync(id);
             if (ong != null)
             {
                 _context.ONGs.Remove(ong);
+                await _context.SaveChangesAsync();
             }
         }
 

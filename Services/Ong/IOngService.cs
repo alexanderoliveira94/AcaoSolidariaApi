@@ -4,13 +4,12 @@ namespace AcaoSolidariaApi.Services
 {
     public interface IOngService
     {
-        void CriarOng(ONG ong);
-        
-        void AtualizarOng(ONG ong);
-        
+
+
+        Task RegistrarOng(ONG ong);
+        Task AtualizarOng(ONG ong);
         ONG ObterOngPorId(int id);
-        
-        void DeletarOng(int id);
-       
+        Task DeletarOng(int id);
     }
+
 }

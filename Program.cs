@@ -15,35 +15,49 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 // Configurando a injeção de dependência para as interfaces e implementações
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
-//builder.Services.AddScoped<IVoluntarioService, VoluntarioService>();
 builder.Services.AddScoped<IOngService, OngService>();
 
 builder.Services.AddCors();
 
 builder.Services.AddControllers();
 
+// Adicione a autenticação por cookies
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = "Cookie";
+    options.DefaultSignInScheme = "Cookie";
+    options.DefaultChallengeScheme = "Cookie";
+})
+.AddCookie("Cookie", options =>
+{
+    options.Cookie.Name = "MyCookie";
+    options.LoginPath = "/Account/Login"; // Substitua pelo caminho da sua página de login
+});
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Configure o Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
-    options.SerializerSettings.ReferenceLoopHandling =
-    Newtonsoft.Json.ReferenceLoopHandling.Ignore
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
 );
-
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure o pipeline de solicitação HTTP.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-//app.UseHttpsRedirection();
+// Redireciona para HTTPS (descomente se necessário)
+// app.UseHttpsRedirection();
 
+app.UseRouting();
+
+// Adiciona autenticação e autorização
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

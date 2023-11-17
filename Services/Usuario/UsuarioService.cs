@@ -21,10 +21,10 @@ public class UsuarioService : IUsuarioService
 
     }
 
-    public void AtualizarUsuario(Usuario usuario)
+    public async Task AtualizarUsuario(Usuario usuario)
     {
         _context.Usuarios.Update(usuario);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
     public Usuario ObterUsuarioPorId(int id)

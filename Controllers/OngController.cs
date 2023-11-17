@@ -3,99 +3,113 @@ using AcaoSolidariaApi.Models;
 using AcaoSolidariaApi.Services;
 using AcaoSolidariaApi.Data;
 using AcaoSolidariaApi.Utils;
+using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace AcaoSolidariaApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class OngController : ControllerBase
     {
         private readonly DataContext _context;
-        private readonly IOngService _ongservice;
+        private readonly IOngService _ongService;
+        private readonly IConfiguration _configuration;
 
-        public OngController(IOngService ongservice, DataContext context)
+        public OngController(IOngService ongService, DataContext context, IConfiguration configuration)
         {
-            _ongservice = ongservice;
+            _ongService = ongService;
             _context = context;
+            _configuration = configuration;
         }
 
-        [HttpPost("criarOng")]
-        public ActionResult CriarOng(ONG ong)
+        private async Task<bool> OngExistente(string email)
         {
-            if (!ModelState.IsValid)
-                return BadRequest("Dados de entrada inválidos.");
+            return await _context.ONGs.AnyAsync(x => x.EmailOng.ToLower() == email.ToLower());
+        }
 
-            if (_context.ONGs.Any(o => o.EmailOng == ong.EmailOng))
-                return BadRequest("O e-mail fornecido já está em uso.");
+        [HttpPost("registrarOng")]
+        public async Task<ActionResult> RegistrarOng(ONG ong)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest("Dados de entrada inválidos.");
 
-            Criptografia.CriarPasswordHash(ong.SenhaOng,out byte[] hash, out byte[] salt);
-            ong.SenhaOng = string.Empty;
-            _ongservice.CriarOng(ong);
-            return Ok("ONG criada com sucesso.");
+                if (await OngExistente(ong.EmailOng))
+                    throw new System.Exception("Email já cadastrado");
+
+                Criptografia.CriarPasswordHash(ong.SenhaOng, out byte[] hash, out byte[] salt);
+                ong.SenhaOng = string.Empty;
+                ong.PasswordHash = hash;
+                ong.PasswordSalt = salt;
+
+                await _ongService.RegistrarOng(ong);
+
+                return Ok(ong.IdOng);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("autenticarOng")]
+        public async Task<IActionResult> AutenticarOng(ONG credenciais)
+        {
+            try
+            {
+                // Verifica se a ONG existe com as credenciais fornecidas
+                ONG? ong = await _context.ONGs
+                    .FirstOrDefaultAsync(x => x.EmailOng.ToLower().Equals(credenciais.EmailOng.ToLower()));
+
+                if (ong == null)
+                {
+                    throw new System.Exception("ONG não encontrada.");
+                }
+                else if (!Criptografia.VerificarPasswordHash(credenciais.SenhaOng, ong.PasswordHash, ong.PasswordSalt))
+                {
+                    throw new System.Exception("Senha incorreta.");
+                }
+                else
+                {
+                    ong.DataRegistro = System.DateTime.Now;
+                    _context.ONGs.Update(ong);
+                    await _context.SaveChangesAsync(); // Confirma a alteração no banco
+                    ong.PasswordHash = null;
+                    ong.PasswordSalt = null;
+                    return Ok(ong);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("atualizarOng/{id}")]
-        public ActionResult AtualizarOng(int id, ONG ong)
+        public ActionResult AtualizarOng(int id, [FromBody] ONG ongAtualizacao)
         {
-            if (id <= 0 || id != ong.IdOng)
-                return BadRequest("ID inválido. O ID fornecido não corresponde ao ID da ONG.");
-
-            if (!ModelState.IsValid)
-                return BadRequest("Dados de entrada inválidos.");
-
             try
             {
+                if (id <= 0 || id != ongAtualizacao.IdOng)
+                    return BadRequest("ID inválido. O ID fornecido não corresponde ao ID da ONG.");
+
                 var ongExistente = ObterOngExistente(id);
                 if (ongExistente == null)
                     return NotFound($"ONG com o ID {id} não encontrada.");
 
-                AtualizarCamposOngExistente(ongExistente, ong);
+                AtualizarCamposOngExistente(ongExistente, ongAtualizacao);
 
-                _ongservice.AtualizarOng(ongExistente);
+                _ongService.AtualizarOng(ongExistente);
                 return Ok("ONG atualizada com sucesso.");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Ocorreu um erro interno no servidor: {ex.Message}. Tente novamente mais tarde.");
+                return StatusCode(500, new { ErrorMessage = "Ocorreu um erro interno no servidor.", ExceptionMessage = ex.Message, StackTrace = ex.StackTrace });
             }
-        }
-
-        private ONG ObterOngExistente(int id)
-        {
-            return _ongservice.ObterOngPorId(id);
-        }
-
-        private void AtualizarCamposOngExistente(ONG ongExistente, ONG ong)
-        {
-            if (!string.IsNullOrEmpty(ong.NomeOng))
-                ongExistente.NomeOng = ong.NomeOng;
-
-            if (!string.IsNullOrEmpty(ong.EnderecoOng))
-                ongExistente.EnderecoOng = ong.EnderecoOng;
-
-            if (!string.IsNullOrEmpty(ong.CNPJOng))
-                ongExistente.CNPJOng = ong.CNPJOng;
-
-            if (!string.IsNullOrEmpty(ong.EmailOng))
-                AtualizarEmailOngExistente(ongExistente, ong.EmailOng);
-
-            if (!string.IsNullOrEmpty(ong.DescricaoOng))
-                ongExistente.DescricaoOng = ong.DescricaoOng;
-
-            if (!string.IsNullOrEmpty(ong.SenhaOng))
-            {
-                Criptografia.CriarPasswordHash(ong.SenhaOng,out byte[] hash, out byte[] salt);
-                ongExistente.SenhaOng = string.Empty;
-            }
-        }
-
-        private void AtualizarEmailOngExistente(ONG ongExistente, string novoEmail)
-        {
-            var emailExistente = _context.ONGs.FirstOrDefault(o => o.EmailOng == novoEmail && o.IdOng != ongExistente.IdOng);
-            if (emailExistente == null)
-                ongExistente.EmailOng = novoEmail;
         }
 
         [HttpGet("obterOng/{id}")]
@@ -106,7 +120,7 @@ namespace AcaoSolidariaApi.Controllers
                 if (id <= 0)
                     return BadRequest("ID inválido. O ID deve ser um número inteiro positivo.");
 
-                var ong = _ongservice.ObterOngPorId(id);
+                var ong = _ongService.ObterOngPorId(id);
 
                 if (ong == null)
                     return NotFound($"ONG com o ID {id} não encontrada.");
@@ -124,12 +138,12 @@ namespace AcaoSolidariaApi.Controllers
         [HttpDelete("deletarOng/{id}")]
         public ActionResult DeletarOng(int id)
         {
-            if (id <= 0)
-                return BadRequest("ID inválido.");
-
             try
             {
-                _ongservice.DeletarOng(id);
+                if (id <= 0)
+                    return BadRequest("ID inválido.");
+
+                _ongService.DeletarOng(id);
                 _context.SaveChanges();
                 return Ok("ONG deletada com sucesso.");
             }
@@ -139,6 +153,53 @@ namespace AcaoSolidariaApi.Controllers
                 Console.WriteLine($"StackTrace: {ex.StackTrace}");
                 return StatusCode(500, "Ocorreu um erro interno no servidor. Tente novamente mais tarde.");
             }
+        }
+
+        private ONG ObterOngExistente(int id)
+        {
+            return _ongService.ObterOngPorId(id);
+        }
+
+        private void AtualizarCamposOngExistente(ONG ongExistente, ONG ongAtualizacao)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(ongAtualizacao.NomeOng))
+                    ongExistente.NomeOng = ongAtualizacao.NomeOng;
+
+                if (!string.IsNullOrEmpty(ongAtualizacao.EnderecoOng))
+                    ongExistente.EnderecoOng = ongAtualizacao.EnderecoOng;
+
+                if (!string.IsNullOrEmpty(ongAtualizacao.CNPJOng))
+                    ongExistente.CNPJOng = ongAtualizacao.CNPJOng;
+
+                if (!string.IsNullOrEmpty(ongAtualizacao.EmailOng))
+                    AtualizarEmailOngExistente(ongExistente, ongAtualizacao.EmailOng);
+
+                if (!string.IsNullOrEmpty(ongAtualizacao.DescricaoOng))
+                    ongExistente.DescricaoOng = ongAtualizacao.DescricaoOng;
+
+                if (!string.IsNullOrEmpty(ongAtualizacao.SenhaOng))
+                {
+                    Criptografia.CriarPasswordHash(ongAtualizacao.SenhaOng, out byte[] hash, out byte[] salt);
+                    ongExistente.SenhaOng = string.Empty;
+                    ongExistente.PasswordHash = hash;
+                    ongExistente.PasswordSalt = salt;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ocorreu um erro: {ex.Message}");
+                Console.WriteLine($"StackTrace: {ex.StackTrace}");
+                throw;
+            }
+        }
+
+        private void AtualizarEmailOngExistente(ONG ongExistente, string novoEmail)
+        {
+            var emailExistente = _context.ONGs.FirstOrDefault(o => o.EmailOng.ToLower() == novoEmail.ToLower() && o.IdOng != ongExistente.IdOng);
+            if (emailExistente == null)
+                ongExistente.EmailOng = novoEmail;
         }
     }
 }

@@ -4,14 +4,10 @@ using AcaoSolidariaApi.Services;
 using AcaoSolidariaApi.Data;
 using AcaoSolidariaApi.Utils;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Authorization;
 
 namespace AcaoSolidariaApi.Controllers
 {
+    
     [ApiController]
     [Route("[controller]")]
     public class UsuarioController : ControllerBase
@@ -19,12 +15,14 @@ namespace AcaoSolidariaApi.Controllers
         private readonly DataContext _context;
         private readonly IUsuarioService _usuarioService;
 
-        public UsuarioController(IUsuarioService usuarioService, DataContext context)
+        private readonly IConfiguration _configuration;
+
+        public UsuarioController(IUsuarioService usuarioService, DataContext context, IConfiguration configuration)
         {
             _usuarioService = usuarioService;
             _context = context;
+            _configuration = configuration;
         }
-
 
         private async Task<bool> UsuarioExistente(string email)
         {
@@ -34,6 +32,7 @@ namespace AcaoSolidariaApi.Controllers
             }
             return false;
         }
+
 
         [HttpPost("Registrar")]
         public async Task<ActionResult> RegistrarUsuario(Usuario usuario)
@@ -61,11 +60,13 @@ namespace AcaoSolidariaApi.Controllers
             }
         }
 
+
         [HttpPost("Autenticar")]
         public async Task<IActionResult> AutenticarUsuario(Usuario credenciais)
         {
             try
             {
+                // Verifica se o usuário existe com as credenciais fornecidas
                 Usuario? usuario = await _context.Usuarios
                     .FirstOrDefaultAsync(x => x.Email.ToLower().Equals(credenciais.Email.ToLower()));
 
@@ -74,14 +75,15 @@ namespace AcaoSolidariaApi.Controllers
                     throw new System.Exception("Usuário não encontrado.");
                 }
                 else if (!Criptografia.VerificarPasswordHash(credenciais.SenhaUsuario, usuario.PasswordHash, usuario.PasswordSalt))
-                {
+                { 
                     throw new System.Exception("Senha incorreta.");
                 }
                 else
                 {
+                   
                     usuario.DataRegistro = System.DateTime.Now;
                     _context.Usuarios.Update(usuario);
-                    await _context.SaveChangesAsync(); //Confirma a alteração no banco
+                    await _context.SaveChangesAsync(); // Confirma a alteração no banco
                     usuario.PasswordHash = null;
                     usuario.PasswordSalt = null;
                     return Ok(usuario);
@@ -94,31 +96,63 @@ namespace AcaoSolidariaApi.Controllers
         }
 
 
+        
         [HttpPut("atualizarUsuario/{id}")]
-        public ActionResult AtualizarUsuario(int id, Usuario usuario)
+        public ActionResult AtualizarUsuario(int id, [FromBody] Usuario usuarioAtualizacao)
         {
             try
             {
-                if (id <= 0 || id != usuario.IdUsuario)
+                // Verifica se o ID é válido
+                if (id <= 0 || id != usuarioAtualizacao.IdUsuario)
                     return BadRequest("ID inválido. O ID fornecido não corresponde ao ID do usuário.");
 
-                if (!ModelState.IsValid)
-                    return BadRequest("Dados de entrada inválidos.");
-
+                // Obtém o usuário existente
                 var usuarioExistente = ObterUsuarioExistente(id);
                 if (usuarioExistente == null)
                     return NotFound($"Usuário com o ID {id} não encontrado.");
 
-                AtualizarCamposUsuarioExistente(usuarioExistente, usuario);
+                // Atualiza apenas os atributos permitidos
+                AtualizarCamposUsuarioExistente(usuarioExistente, usuarioAtualizacao);
 
+                // Chama o serviço para atualizar o usuário
                 _usuarioService.AtualizarUsuario(usuarioExistente);
+
                 return Ok("Usuário atualizado com sucesso.");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Ocorreu um erro interno no servidor: {ex.Message}. Tente novamente mais tarde.");
+                return StatusCode(500, new { ErrorMessage = "Ocorreu um erro interno no servidor.", ExceptionMessage = ex.Message, StackTrace = ex.StackTrace });
             }
         }
+
+        private void AtualizarCamposUsuarioExistente(Usuario usuarioExistente, Usuario usuarioAtualizacao)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(usuarioAtualizacao.Nome))
+                    usuarioExistente.Nome = usuarioAtualizacao.Nome;
+
+                if (!string.IsNullOrEmpty(usuarioAtualizacao.DescricaoHabilidades))
+                    usuarioExistente.DescricaoHabilidades = usuarioAtualizacao.DescricaoHabilidades;
+
+                if (!string.IsNullOrEmpty(usuarioAtualizacao.SenhaUsuario))
+                {
+                    Criptografia.CriarPasswordHash(usuarioAtualizacao.SenhaUsuario, out byte[] hash, out byte[] salt);
+                    usuarioExistente.SenhaUsuario = string.Empty;
+                    usuarioExistente.PasswordHash = hash;
+                    usuarioExistente.PasswordSalt = salt;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ocorreu um erro: {ex.Message}");
+                Console.WriteLine($"StackTrace: {ex.StackTrace}");
+                throw;
+            }
+        }
+
+
+
 
         [HttpGet("obterUsuario/{id}")]
         public ActionResult<Usuario> ObterUsuarioPorId(int id)
@@ -168,49 +202,6 @@ namespace AcaoSolidariaApi.Controllers
             return _usuarioService.ObterUsuarioPorId(id);
         }
 
-        private void AtualizarCamposUsuarioExistente(Usuario usuarioExistente, Usuario usuario)
-        {
-            try
-            {
-                if (!string.IsNullOrEmpty(usuario.Nome))
-                    usuarioExistente.Nome = usuario.Nome;
 
-                if (!string.IsNullOrEmpty(usuario.Email))
-                {
-                    AtualizarEmailUsuarioExistente(usuarioExistente, usuario.Email);
-                }
-
-                if (!string.IsNullOrEmpty(usuario.DescricaoHabilidades))
-                    usuarioExistente.DescricaoHabilidades = usuario.DescricaoHabilidades;
-
-                if (!string.IsNullOrEmpty(usuario.SenhaUsuario))
-                {
-                    Criptografia.CriarPasswordHash(usuario.SenhaUsuario, out byte[] hash, out byte[] salt);
-                    usuarioExistente.SenhaUsuario = string.Empty;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ocorreu um erro: {ex.Message}");
-                Console.WriteLine($"StackTrace: {ex.StackTrace}");
-                throw;
-            }
-        }
-
-        private void AtualizarEmailUsuarioExistente(Usuario usuarioExistente, string novoEmail)
-        {
-            try
-            {
-                var emailExistente = _context.Usuarios.FirstOrDefault(u => u.Email == novoEmail && u.IdUsuario != usuarioExistente.IdUsuario);
-                if (emailExistente == null)
-                    usuarioExistente.Email = novoEmail;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ocorreu um erro: {ex.Message}");
-                Console.WriteLine($"StackTrace: {ex.StackTrace}");
-                throw;
-            }
-        }
     }
 }
