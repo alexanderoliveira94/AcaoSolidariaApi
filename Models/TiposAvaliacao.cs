@@ -11,6 +11,6 @@ namespace AcaoSolidariaApi.Models
         public string DsTipoAvaliador { get; set; }
         public int TpAvaliado { get; set; }
 
-        public string TesteGit { get; set; }
+        public string TesteGit3 { get; set; }
     }
 }
