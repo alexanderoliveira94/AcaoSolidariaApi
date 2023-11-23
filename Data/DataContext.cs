@@ -16,24 +16,24 @@ namespace AcaoSolidariaApi.Data
         }
 
         public DbSet<ONG> ONGs { get; set; }
-        
-        public DbSet<Usuario> Usuarios {get; set;}
- 
+
+        public DbSet<Usuario> Usuarios { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            
-            modelBuilder.Entity<ONG>().ToTable("ONGs"); 
-            modelBuilder.Entity<Usuario>().ToTable("Usuarios"); 
+
+            modelBuilder.Entity<ONG>().ToTable("ONGs");
+            modelBuilder.Entity<Usuario>().ToTable("Usuarios");
             modelBuilder.Entity<Usuario>(entity =>
             {
                 entity.HasIndex(u => u.Email).IsUnique();
             });
         }
 
-        
-        
+
+
     }
 
-     
+
 }
