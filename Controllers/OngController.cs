@@ -42,6 +42,7 @@ namespace AcaoSolidariaApi.Controllers
                     throw new System.Exception("Email já cadastrado");
 
                 Criptografia.CriarPasswordHash(ong.SenhaOng, out byte[] hash, out byte[] salt);
+                ong.DataRegistro = System.DateTime.Now;
                 ong.SenhaOng = string.Empty;
                 ong.PasswordHash = hash;
                 ong.PasswordSalt = salt;

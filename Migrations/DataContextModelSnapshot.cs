@@ -67,6 +67,32 @@ namespace AcaoSolidariaApi.Migrations
                     b.ToTable("ONGs", (string)null);
                 });
 
+            modelBuilder.Entity("AcaoSolidariaApi.Models.Publicacao", b =>
+                {
+                    b.Property<int>("IdPublicacao")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPublicacao"));
+
+                    b.Property<string>("Conteudo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DataPublicacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("OngAssociada")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProjetoAssociado")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdPublicacao");
+
+                    b.ToTable("Publicacoes", (string)null);
+                });
+
             modelBuilder.Entity("AcaoSolidariaApi.Models.Usuario", b =>
                 {
                     b.Property<int>("IdUsuario")

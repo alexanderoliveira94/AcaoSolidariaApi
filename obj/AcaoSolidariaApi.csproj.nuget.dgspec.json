@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj": {}
+    "D:\\AcaoSolidariaApieApp\\29112023\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj": {}
   },
   "projects": {
-    "D:\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj": {
+    "D:\\AcaoSolidariaApieApp\\29112023\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
+        "projectUniqueName": "D:\\AcaoSolidariaApieApp\\29112023\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
         "projectName": "AcaoSolidariaApi",
-        "projectPath": "D:\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
-        "packagesPath": "C:\\Users\\Alex\\.nuget\\packages\\",
-        "outputPath": "D:\\AcaoSolidariaApi\\obj\\",
+        "projectPath": "D:\\AcaoSolidariaApieApp\\29112023\\AcaoSolidariaApi\\AcaoSolidariaApi.csproj",
+        "packagesPath": "C:\\Users\\etechas\\.nuget\\packages\\",
+        "outputPath": "D:\\AcaoSolidariaApieApp\\29112023\\AcaoSolidariaApi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Alex\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\etechas\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -27,6 +27,7 @@
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "C:\\Program Files\\dotnet\\library-packs": {},
+          "C:\\Program Files\\dotnet\\sdk\\7.0.305\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -103,7 +104,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.305\\RuntimeIdentifierGraph.json"
         }
       }
     }
