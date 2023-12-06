@@ -21,6 +21,8 @@ namespace AcaoSolidariaApi.Data
 
         public DbSet<Publicacao> Publicacoes { get; set; }
 
+        public DbSet<Candidatura> Candidaturas { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
@@ -31,6 +33,7 @@ namespace AcaoSolidariaApi.Data
                 entity.HasIndex(u => u.Email).IsUnique();
             });
             modelBuilder.Entity<Publicacao>().ToTable("Publicacoes");
+            modelBuilder.Entity<Candidatura>().ToTable("Candidaturas");
         }
 
 

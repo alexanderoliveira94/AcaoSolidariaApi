@@ -2,6 +2,9 @@ using AcaoSolidariaApi.Data;
 using AcaoSolidariaApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using AcaoSolidariaApi.Services;
+using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace AcaoSolidariaApi.Controllers
 {
@@ -12,10 +15,12 @@ namespace AcaoSolidariaApi.Controllers
         private readonly DataContext _context;
         private readonly IPublicacaoService _publicacaoService;
 
+
         public PublicacaoController(DataContext context, IPublicacaoService publicacaoService)
         {
             _context = context;
             _publicacaoService = publicacaoService;
+
         }
 
         [HttpPost("criarPublicacao")]
@@ -45,7 +50,6 @@ namespace AcaoSolidariaApi.Controllers
                 return StatusCode(500, new { ErrorMessage = "Ocorreu um erro interno no servidor.", ExceptionMessage = ex.Message, StackTrace = ex.StackTrace });
             }
         }
-
 
         [HttpGet("listarPublicacoes")]
         public ActionResult<IEnumerable<Publicacao>> ListarPublicacoes()
@@ -80,6 +84,49 @@ namespace AcaoSolidariaApi.Controllers
                 return StatusCode(500, new { ErrorMessage = "Ocorreu um erro interno no servidor.", ExceptionMessage = ex.Message, StackTrace = ex.StackTrace });
             }
         }
+
+        [HttpPost("candidatarProjeto/{idPublicacao}")]
+
+        public async Task<IActionResult> CandidatarProjeto(int idPublicacao)
+        {
+            try
+            {
+                // Obter o ID do usuário autenticado a partir do token
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (userId == null)
+                {
+                    return Unauthorized("Usuário não autenticado.");
+                }
+
+                // Verificar se o usuário já está associado a esta publicação (adicione essa verificação se necessário)
+                var candidaturaExistente = await _context.Candidaturas
+                    .FirstOrDefaultAsync(c => c.IdPublicacao == idPublicacao && c.IdUsuario == int.Parse(userId));
+
+                if (candidaturaExistente != null)
+                {
+                    return BadRequest("Usuário já candidatou-se a este projeto.");
+                }
+
+                // Associar o usuário à publicação
+                var candidatura = new Candidatura
+                {
+                    IdPublicacao = idPublicacao,
+                    IdUsuario = int.Parse(userId),
+                    DataCandidatura = DateTime.Now
+                };
+
+                _context.Candidaturas.Add(candidatura);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { Mensagem = "Usuário candidatou-se ao projeto com sucesso." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ErrorMessage = "Ocorreu um erro interno no servidor.", ExceptionMessage = ex.Message, StackTrace = ex.StackTrace });
+            }
+        }
+
 
     }
 }
