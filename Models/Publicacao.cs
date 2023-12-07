@@ -7,14 +7,17 @@ namespace AcaoSolidariaApi.Models
     {
         [Key]
         public int IdPublicacao { get; set; }
-        public int ProjetoAssociado { get; set; } = 0;
-        public string Conteudo { get; set; } = string.Empty;
+        public string Titulo { get; set; }
+        public string Descricao { get; set; }
 
         [JsonIgnore]
-        public DateTime? DataPublicacao { get; set; }
+        public DateTime DataPublicacao { get; set; }
+        
+        [JsonIgnore]
+        public DateTime DataInicio { get; set; }
+        public DateTime DataFim { get; set; }
+        public int VagasDisponiveis { get; set; }
+        public string Local { get; set; }
         public int OngAssociada { get; set; }
-
-        // Adicione a propriedade de navegação para a lista de candidaturas associadas a esta publicação
-        public List<Candidatura> Candidaturas { get; set; }
     }
 }

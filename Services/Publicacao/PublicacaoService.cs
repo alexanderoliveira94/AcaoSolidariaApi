@@ -31,8 +31,8 @@ public class PublicacaoService : IPublicacaoService
             }
 
             // Adicione a lista de candidaturas à publicação
-            publicacao.Candidaturas = new List<Candidatura>();
-
+            // publicacao.Candidaturas = new List<Candidatura>();
+            publicacao.DataInicio = DateTime.Now;
             publicacao.DataPublicacao = DateTime.Now;
             _context.Publicacoes.Add(publicacao);
             await _context.SaveChangesAsync();

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AcaoSolidariaApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class PublicacaoController : ControllerBase
     {
         private readonly DataContext _context;
@@ -29,27 +29,43 @@ namespace AcaoSolidariaApi.Controllers
             try
             {
                 // Validar se a ONG autenticada é válida (opcional dependendo da sua lógica)
-                if (!await _publicacaoService.VerificarOngAutenticada(publicacao.OngAssociada))
+                // Aqui, estou apenas assumindo que a ONG está sendo enviada no request
+                if (publicacao.OngAssociada <= 0)
                 {
-                    return Unauthorized("ONG não autorizada.");
+                    return BadRequest("OngAssociada é obrigatório.");
                 }
 
-                publicacao.DataPublicacao = DateTime.Now;
+                // Validar datas
+                if (publicacao.DataFim <= publicacao.DataInicio)
+                {
+                    return BadRequest("A data de término deve ser posterior à data de início.");
+                }
 
-                if (await _publicacaoService.CriarPublicacao(publicacao))
+                // Criar a publicação
+                var criarPublicacao = new Publicacao
                 {
-                    return Ok(new { Mensagem = "Publicação criada com sucesso." });
-                }
-                else
-                {
-                    return StatusCode(500, "Falha ao criar a publicação.");
-                }
+                    Titulo = publicacao.Titulo,
+                    Descricao = publicacao.Descricao,
+                    DataInicio = publicacao.DataInicio,
+                    DataFim = publicacao.DataFim,
+                    VagasDisponiveis = publicacao.VagasDisponiveis,
+                    Local = publicacao.Local,
+                    OngAssociada = publicacao.OngAssociada,
+                    DataPublicacao = DateTime.Now
+                };
+
+                _context.Publicacoes.Add(publicacao);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { Mensagem = "Publicação criada com sucesso.", IdPublicacao = publicacao.IdPublicacao });
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { ErrorMessage = "Ocorreu um erro interno no servidor.", ExceptionMessage = ex.Message, StackTrace = ex.StackTrace });
             }
         }
+
+
 
         [HttpGet("listarPublicacoes")]
         public ActionResult<IEnumerable<Publicacao>> ListarPublicacoes()
