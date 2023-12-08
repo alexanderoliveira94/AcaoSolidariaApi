@@ -19,5 +19,6 @@ namespace AcaoSolidariaApi.Models
         public int VagasDisponiveis { get; set; }
         public string Local { get; set; }
         public int OngAssociada { get; set; }
+        
     }
 }

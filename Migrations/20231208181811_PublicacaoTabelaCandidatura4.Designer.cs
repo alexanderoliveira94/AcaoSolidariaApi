@@ -4,6 +4,7 @@ using AcaoSolidariaApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcaoSolidariaApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231208181811_PublicacaoTabelaCandidatura4")]
+    partial class PublicacaoTabelaCandidatura4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,7 +42,17 @@ namespace AcaoSolidariaApi.Migrations
                     b.Property<int>("IdUsuario")
                         .HasColumnType("int");
 
+                    b.Property<int?>("PublicacaoIdPublicacao")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioIdUsuario")
+                        .HasColumnType("int");
+
                     b.HasKey("IdCandidatura");
+
+                    b.HasIndex("PublicacaoIdPublicacao");
+
+                    b.HasIndex("UsuarioIdUsuario");
 
                     b.ToTable("Candidaturas", (string)null);
                 });
@@ -170,6 +183,26 @@ namespace AcaoSolidariaApi.Migrations
                         .IsUnique();
 
                     b.ToTable("Usuarios", (string)null);
+                });
+
+            modelBuilder.Entity("AcaoSolidariaApi.Models.Candidatura", b =>
+                {
+                    b.HasOne("AcaoSolidariaApi.Models.Publicacao", "Publicacao")
+                        .WithMany("Candidaturas")
+                        .HasForeignKey("PublicacaoIdPublicacao");
+
+                    b.HasOne("AcaoSolidariaApi.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioIdUsuario");
+
+                    b.Navigation("Publicacao");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("AcaoSolidariaApi.Models.Publicacao", b =>
+                {
+                    b.Navigation("Candidaturas");
                 });
 #pragma warning restore 612, 618
         }

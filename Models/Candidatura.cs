@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace AcaoSolidariaApi.Models
 {
@@ -14,10 +15,8 @@ namespace AcaoSolidariaApi.Models
 
         public DateTime DataCandidatura { get; set; }
 
-        
-        public Publicacao Publicacao { get; set; }
+        // public Publicacao Publicacao { get; set; }
 
-        
-        public Usuario Usuario { get; set; }
+        // public Usuario Usuario { get; set; }
     }
 }
