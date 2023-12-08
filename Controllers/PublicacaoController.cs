@@ -140,7 +140,8 @@ namespace AcaoSolidariaApi.Controllers
                     _context.Candidaturas.Add(candidatura);
                     await _context.SaveChangesAsync();
 
-                    return Ok(new { Mensagem = "Usuário candidatou-se ao projeto com sucesso." });
+                    // Retorna um objeto anônimo para ser serializado em JSON
+                    return Ok();
                 }
                 else
                 {
@@ -152,6 +153,7 @@ namespace AcaoSolidariaApi.Controllers
                 return StatusCode(500, new { ErrorMessage = "Ocorreu um erro interno no servidor.", ExceptionMessage = ex.Message, StackTrace = ex.StackTrace });
             }
         }
+
 
         // [HttpGet("obterProjetosAssociados")]
         // public ActionResult<IEnumerable<object>> ObterProjetosAssociados(int? idUsuario, int? idOng)
