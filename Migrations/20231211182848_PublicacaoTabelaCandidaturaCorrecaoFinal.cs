@@ -5,7 +5,7 @@
 namespace AcaoSolidariaApi.Migrations
 {
     /// <inheritdoc />
-    public partial class PublicacaoTabelaCandidaturaCorrecaoReal : Migration
+    public partial class PublicacaoTabelaCandidaturaCorrecaoFinal : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

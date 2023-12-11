@@ -1,8 +1,6 @@
 using AcaoSolidariaApi.Data;
 using AcaoSolidariaApi.Models;
 using Microsoft.AspNetCore.Mvc;
-using AcaoSolidariaApi.Services;
-using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -107,20 +105,24 @@ namespace AcaoSolidariaApi.Controllers
         {
             try
             {
+                if (idUsuario <= 0)
+                {
+                    return BadRequest(new { ErrorMessage = "ID de usuário inválido." });
+                }
                 // Verificar se o usuário já está associado a esta publicação
                 var candidaturaExistente = await _context.Candidaturas
                     .AnyAsync(c => c.IdUsuario == idUsuario && c.IdPublicacao == idPublicacao);
 
                 if (candidaturaExistente)
                 {
-                    return BadRequest("Usuário já candidatou-se a este projeto.");
+                    return BadRequest(new { ErrorMessage = "Usuário já candidatou-se a este projeto." });
                 }
 
                 // Verificar se há vagas disponíveis
                 var publicacao = await _context.Publicacoes.FindAsync(idPublicacao);
                 if (publicacao == null)
                 {
-                    return BadRequest("Publicação não encontrada.");
+                    return BadRequest(new { ErrorMessage = "Publicação não encontrada." });
                 }
 
                 if (publicacao.VagasDisponiveis > 0)
@@ -141,12 +143,27 @@ namespace AcaoSolidariaApi.Controllers
                     await _context.SaveChangesAsync();
 
                     // Retorna um objeto anônimo para ser serializado em JSON
-                    return Ok();
+                    return new OkObjectResult("Candidatura realizada com sucesso");
                 }
                 else
                 {
-                    return BadRequest("Não há vagas disponíveis para esta publicação.");
+                    return BadRequest(new { ErrorMessage = "Não há vagas disponíveis para esta publicação." });
                 }
+            }
+            catch (Exception ex)
+            {
+                // Retorna uma resposta com status 500 e informações de erro em formato JSON
+                return StatusCode(500, new { ErrorMessage = "Ocorreu um erro interno no servidor.", ExceptionMessage = ex.Message, StackTrace = ex.StackTrace });
+            }
+        }
+
+        [HttpGet("listarCandidaturas")]
+        public ActionResult<IEnumerable<Candidatura>> ListarCandidaturas()
+        {
+            try
+            {
+                var candidaturas = _context.Candidaturas.ToList();
+                return Ok(candidaturas);
             }
             catch (Exception ex)
             {
@@ -155,57 +172,12 @@ namespace AcaoSolidariaApi.Controllers
         }
 
 
-        // [HttpGet("obterProjetosAssociados")]
-        // public ActionResult<IEnumerable<object>> ObterProjetosAssociados(int? idUsuario, int? idOng)
-        // {
-        //     try
-        //     {
-        //         // Verificar se foi fornecido pelo menos um dos IDs
-        //         if (idUsuario == null && idOng == null)
-        //         {
-        //             return BadRequest("É necessário fornecer pelo menos um dos IDs (idUsuario ou idOng).");
-        //         }
-
-        //         // Filtrar as candidaturas com base no ID do usuário ou ONG fornecido
-        //         var candidaturas = _context.Candidaturas
-        //             .Where(c => idUsuario == null || c.IdUsuario == idUsuario)
-        //             .Where(c => idOng == null || _context.Publicacoes.Any(p => p.OngAssociada == idOng && p.IdPublicacao == c.IdPublicacao))
-        //             .Include(c => c.Publicacao)
-        //             .Include(c => c.Usuario)
-        //             .ToList();
-
-        //         // Montar a resposta final
-        //         var projetosAssociados = candidaturas.Select(c => new
-        //         {
-        //             Projeto = new
-        //             {
-        //                 c.Publicacao.IdPublicacao,
-        //                 c.Publicacao.Titulo,
-        //                 c.Publicacao.Descricao,
-        //                 c.Publicacao.DataFim,
-        //                 c.Publicacao.VagasDisponiveis,
-        //                 c.Publicacao.Local,
-        //                 OngAssociada = c.Publicacao.OngAssociada,
-        //             },
-        //             UsuarioAssociado = new
-        //             {
-        //                 c.Usuario.IdUsuario,
-        //                 c.Usuario.Nome,
-        //                 c.Usuario.Email,
-        //                 c.Usuario.DescricaoHabilidades,
-        //             }
-        //         });
-
-        //         return Ok(projetosAssociados);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return StatusCode(500, new { ErrorMessage = "Ocorreu um erro interno no servidor.", ExceptionMessage = ex.Message, StackTrace = ex.StackTrace });
-        //     }
-        // }
-
-
-
-
     }
 }
+
+
+
+
+
+
+

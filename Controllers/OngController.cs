@@ -156,6 +156,23 @@ namespace AcaoSolidariaApi.Controllers
             }
         }
 
+        [HttpGet("listarOngs")]
+        public ActionResult<IEnumerable<ONG>> ListarOngs()
+        {
+            try
+            {
+                var ongs = _ongService.ListarOngs(); // Adicione um método ao seu serviço para obter todas as ONGs
+                return Ok(ongs);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ocorreu um erro: {ex.Message}");
+                Console.WriteLine($"StackTrace: {ex.StackTrace}");
+                return StatusCode(500, $"Ocorreu um erro interno no servidor: {ex.Message}. Tente novamente mais tarde.");
+            }
+        }
+
+
         private ONG ObterOngExistente(int id)
         {
             return _ongService.ObterOngPorId(id);

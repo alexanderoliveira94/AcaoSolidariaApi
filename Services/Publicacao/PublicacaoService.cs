@@ -46,6 +46,8 @@ public class PublicacaoService : IPublicacaoService
         }
     }
 
+    
+
     public async Task<bool> VerificarCandidaturaExistente(int usuarioId, int publicacaoId)
     {
         return await _context.Candidaturas.AnyAsync(c => c.IdUsuario == usuarioId && c.IdPublicacao == publicacaoId);
@@ -80,7 +82,9 @@ public class PublicacaoService : IPublicacaoService
         {
             // Lida com a exceção conforme necessário
             return false;
-        }
+        }    
     }
+
+    
 }
 

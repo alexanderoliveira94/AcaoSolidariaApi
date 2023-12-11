@@ -29,7 +29,7 @@ namespace AcaoSolidariaApi.Services
 
         public ONG ObterOngPorId(int id)
         {
-            return  _context.ONGs.FirstOrDefault(u => u.IdOng == id);
+            return _context.ONGs.FirstOrDefault(u => u.IdOng == id);
         }
 
         public async Task DeletarOng(int id)
@@ -41,6 +41,12 @@ namespace AcaoSolidariaApi.Services
                 await _context.SaveChangesAsync();
             }
         }
+
+        public IEnumerable<ONG> ListarOngs()
+        {
+            return _context.ONGs.ToList();
+        }
+
 
 
     }

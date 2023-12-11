@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcaoSolidariaApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231208184956_PublicacaoTabelaCandidaturaCorrecaoReal")]
-    partial class PublicacaoTabelaCandidaturaCorrecaoReal
+    [Migration("20231211182848_PublicacaoTabelaCandidaturaCorrecaoFinal")]
+    partial class PublicacaoTabelaCandidaturaCorrecaoFinal
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
